@@ -35,25 +35,28 @@ import lerobot
 from lerobot.datasets.lerobot_dataset import LeRobotDataset, LeRobotDatasetMetadata
 
 # We ported a number of existing datasets ourselves, use this to see the list:
-print("List of available datasets:")
-pprint(lerobot.available_datasets)
+# print("List of available datasets:")
+# pprint(lerobot.available_datasets)
 
 # You can also browse through the datasets created/ported by the community on the hub using the hub api:
 hub_api = HfApi()
-repo_ids = [info.id for info in hub_api.list_datasets(task_categories="robotics", tags=["LeRobot"])]
-pprint(repo_ids)
+# repo_ids = [info.id for info in hub_api.list_datasets(task_categories="robotics", tags=["LeRobot"])]
+# pprint(repo_ids)
 
 # Or simply explore them in your web browser directly at:
 # https://huggingface.co/datasets?other=LeRobot
 
 # Let's take this one for this example
-repo_id = "lerobot/aloha_mobile_cabinet"
+# repo_id = "lerobot/aloha_mobile_cabinet"
+# repo_id = "lerobot/svla_so101_pickplace"
+repo_id = "lerobot/metaworld_mt50"
 # We can have a look and fetch its metadata to know more about it:
 ds_meta = LeRobotDatasetMetadata(repo_id)
 
 # By instantiating just this class, you can quickly access useful information about the content and the
 # structure of the dataset without downloading the actual data yet (only metadata files — which are
 # lightweight).
+print("==============================Dataset Metadata==============================\n")
 print(f"Total number of episodes: {ds_meta.total_episodes}")
 print(f"Average number of frames per episode: {ds_meta.total_frames / ds_meta.total_episodes:.3f}")
 print(f"Frames per second used during data collection: {ds_meta.fps}")
@@ -66,12 +69,15 @@ print("Features:")
 pprint(ds_meta.features)
 
 # You can also get a short summary by simply printing the object:
+print("Short summary of the dataset metadata:")
 print(ds_meta)
 
 # You can then load the actual dataset from the hub.
 # Either load any subset of episodes:
-dataset = LeRobotDataset(repo_id, episodes=[0, 10, 11, 23])
+# dataset = LeRobotDataset(repo_id, episodes=[0, 10, 11, 23])
+dataset = LeRobotDataset(repo_id, episodes=[0])
 
+print("==============================Specific Episode==============================\n")
 # And see how many frames you have:
 print(f"Selected episodes: {dataset.episodes}")
 print(f"Number of episodes selected: {dataset.num_episodes}")
@@ -79,10 +85,12 @@ print(f"Number of frames selected: {dataset.num_frames}")
 
 # Or simply load the entire dataset:
 dataset = LeRobotDataset(repo_id)
+print("==============================Entire Episode==============================\n")
 print(f"Number of episodes selected: {dataset.num_episodes}")
 print(f"Number of frames selected: {dataset.num_frames}")
 
 # The previous metadata class is contained in the 'meta' attribute of the dataset:
+print("==============================Metadata Printed By Object==============================\n")
 print(dataset.meta)
 
 # LeRobotDataset actually wraps an underlying Hugging Face dataset
@@ -103,11 +111,13 @@ camera_key = dataset.meta.camera_keys[0]
 frames = [dataset[idx][camera_key] for idx in range(from_idx, to_idx)]
 
 # The objects returned by the dataset are all torch.Tensors
+print("First frame type and shape:")
 print(type(frames[0]))
 print(frames[0].shape)
 
 # Since we're using pytorch, the shape is in pytorch, channel-first convention (c, h, w).
 # We can compare this shape with the information available for that feature
+print("Camera key information:")
 pprint(dataset.features[camera_key])
 # In particular:
 print(dataset.features[camera_key]["shape"])
